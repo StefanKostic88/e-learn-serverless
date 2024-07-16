@@ -1,5 +1,6 @@
 import {
   APIGatewayAuthorizerResult,
+  APIGatewayAuthorizerResultContext,
   APIGatewayTokenAuthorizerEvent,
   StatementEffect,
 } from "aws-lambda";
@@ -25,7 +26,8 @@ const generatePolicy = (
 };
 
 export const basicAuthorizer = async (
-  event: APIGatewayTokenAuthorizerEvent
+  event: APIGatewayTokenAuthorizerEvent,
+  context: APIGatewayAuthorizerResultContext
 ) => {
   if (
     !event.authorizationToken ||
@@ -39,6 +41,8 @@ export const basicAuthorizer = async (
   console.log(decodedToken);
 
   if ((decodedToken as { id: string }).id) {
+    context.id = (decodedToken as { id: string }).id;
+
     return generatePolicy("user", "Allow", event.methodArn);
   } else {
     return generatePolicy("user", "Deny", event.methodArn);
