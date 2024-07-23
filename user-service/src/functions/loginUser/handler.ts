@@ -2,7 +2,7 @@ import schema from "./schema";
 import { ValidatedEventAPIGatewayProxyEvent } from "@libs/api-gateway";
 import { middyfy } from "@libs/lambda";
 
-import { userServiceInstance } from "../../services/user.service";
+import { userServiceInstance } from "../../../../services/user.service";
 import { LoginData } from "../../models/user.model";
 
 const loginUser: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (

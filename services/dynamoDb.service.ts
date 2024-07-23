@@ -3,10 +3,9 @@ import {
   PutItemCommand,
   ScanCommand,
 } from "@aws-sdk/client-dynamodb";
-import { CurrentUser } from "../models/user.model";
+import { CurrentUser } from "../user-service/src/models/user.model";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
 import CustomError from "./customError.service";
-export const dbClient = new DynamoDBClient();
 
 export class DynamoDbService {
   public static instance: DynamoDbService;
@@ -69,7 +68,7 @@ export class DynamoDbService {
       const scannedUsers = await this.dbClient.send(
         new ScanCommand(scanCommand)
       );
-      const user = scannedUsers.Items[0];
+      const user = scannedUsers.Items?.[0];
       return user;
     } catch (error) {
       throw error;
@@ -87,13 +86,13 @@ export class DynamoDbService {
       };
 
       const userItem = await this.dbClient.send(new ScanCommand(scanCommand));
-      if (userItem.Items.length === 0) {
+      if (userItem.Items?.length === 0) {
         throw new CustomError(
           `No user with selected username: ${username} found`,
           400
         );
       }
-      const user = unmarshall(userItem.Items[0]);
+      const user = userItem.Items?.[0] && unmarshall(userItem.Items[0]);
       return user;
     } catch (error) {
       throw error;

@@ -1,13 +1,14 @@
 import * as bcrypt from "bcryptjs";
 import * as generatePassword from "generate-password";
 import CustomError from "./customError.service";
-import { RegisterUser, CurrentUser } from "../models/user.model";
+import {
+  RegisterUser,
+  CurrentUser,
+} from "../user-service/src/models/user.model";
 
 import { v4 } from "uuid";
-
 import { DynamoDbService } from "./dynamoDb.service";
-import * as jwt from "jsonwebtoken";
-import { jwtServiceInstance } from "../../../services/jwt.service";
+import { jwtServiceInstance } from "./jwt.service";
 
 const encryptPassword = async (password: string) => {
   const hashedPass = await bcrypt.hash(password, 10);
@@ -37,28 +38,28 @@ const generateUserName = (input: string = "AZ") => {
   return slicedName + "_" + v4().split("-")[0].slice(0, 4);
 };
 
-const createToken = (user: Record<string, any>, expiresIn = "2h") => {
-  const logedInUser = {
-    user_id: user.id,
-    username: user.username,
-    firstName: user.firstName,
-    role: user.role,
-  };
-  return new Promise((resolve, reject) => {
-    jwt.sign(
-      logedInUser,
-      "super_secret_key",
-      { expiresIn },
-      (err: any, token: string) => {
-        if (err || !token) {
-          return reject(new Error("adasasd"));
-        }
+// const createToken = (user: Record<string, any>, expiresIn = "2h") => {
+//   const logedInUser = {
+//     user_id: user.id,
+//     username: user.username,
+//     firstName: user.firstName,
+//     role: user.role,
+//   };
+//   return new Promise((resolve, reject) => {
+//     jwt.sign(
+//       logedInUser,
+//       "super_secret_key",
+//       { expiresIn },
+//       (err: any, token: string) => {
+//         if (err || !token) {
+//           return reject(new Error("adasasd"));
+//         }
 
-        resolve(token);
-      }
-    );
-  });
-};
+//         resolve(token);
+//       }
+//     );
+//   });
+// };
 
 class UserService {
   public static instance: UserService;
@@ -114,7 +115,7 @@ class UserService {
       firstName: registerUser.firstName,
       lastName: registerUser.lastName,
       email: registerUser.email,
-      role: registerUser.role,
+      role: registerUser.role ? registerUser.role : "student",
       password: passwordEncrypted,
       dateOfBirth: registerUser.dateOfBirth,
       address: registerUser.address,

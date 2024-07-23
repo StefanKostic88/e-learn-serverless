@@ -2,7 +2,7 @@ import type { ValidatedEventAPIGatewayProxyEvent } from "@libs/api-gateway";
 
 import { middyfy } from "@libs/lambda";
 
-import { userServiceInstance } from "../../services/user.service";
+import { userServiceInstance } from "../../../../services/user.service";
 
 import schema from "./schema";
 import { RegisterUser } from "../../models/user.model";

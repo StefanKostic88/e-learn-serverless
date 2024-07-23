@@ -6,11 +6,13 @@ import {
 } from "aws-lambda";
 
 import { jwtServiceInstance } from "../../../../services/jwt.service";
+import CustomError from "../../../../services/customError.service";
 
 const generatePolicy = (
   principalId: string,
   effect: StatementEffect,
-  resource: string
+  resource: string,
+  context?: APIGatewayAuthorizerResultContext
 ): APIGatewayAuthorizerResult => {
   const response: APIGatewayAuthorizerResult = {
     principalId,
@@ -20,6 +22,7 @@ const generatePolicy = (
         { Action: "execute-api:Invoke", Effect: effect, Resource: resource },
       ],
     },
+    context,
   };
 
   return response;
@@ -31,20 +34,31 @@ export const basicAuthorizer = async (
 ) => {
   if (
     !event.authorizationToken ||
-    event.authorizationToken.split(" ")[0] !== "Basic"
+    event.authorizationToken.split(" ")[0] !== "Bearer"
   ) {
-    throw new Error("Unauthorized");
+    // throw new Error("Unauthorized");
+    // 401
+    throw new CustomError("Unauthorized", 401);
   }
 
   const token = event.authorizationToken.split(" ")[1];
-  const decodedToken = await jwtServiceInstance.verifyToken(token);
-  console.log(decodedToken);
 
-  if ((decodedToken as { id: string }).id) {
-    context.id = (decodedToken as { id: string }).id;
+  try {
+    const decodedToken = (await jwtServiceInstance.verifyToken(token)) as {
+      id: string;
+    };
+    if (decodedToken.id) {
+      const context: APIGatewayAuthorizerResultContext = {
+        id: (decodedToken as { id: string }).id,
+      };
 
-    return generatePolicy("user", "Allow", event.methodArn);
-  } else {
-    return generatePolicy("user", "Deny", event.methodArn);
+      return generatePolicy("user", "Allow", event.methodArn, context);
+    } else {
+      return generatePolicy("user", "Deny", event.methodArn);
+    }
+  } catch (error) {
+    throw new CustomError("Unauthorized", 401);
+    // throw new Error("Unauthorized");
+    // 401
   }
 };

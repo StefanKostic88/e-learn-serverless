@@ -8,7 +8,7 @@ class JwtService {
     this.secret = "super_secret_key";
   }
 
-  public createToken(user: object, expiresIn = "2h") {
+  public createToken(user: Record<string, any>, expiresIn = "2h") {
     const currentUser = {
       id: (user as { id: string }).id,
     };
@@ -35,12 +35,10 @@ class JwtService {
     return new Promise((resolve, reject) => {
       jwt.verify(token, this.secret, (err, decoded) => {
         if (err) {
-          console.log(err);
-          return reject(err.message);
           return reject(new Error("Error while decoding token"));
         }
         // add type when you refactor
-        resolve(decoded as object);
+        resolve(decoded as Record<string, any>);
       });
     });
   }

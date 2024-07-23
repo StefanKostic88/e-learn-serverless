@@ -20,7 +20,7 @@ export interface CurrentUser {
   username: string;
   isActive: boolean;
   id: string;
-  img: string;
+  img?: string;
 }
 
 export interface LoginData {
