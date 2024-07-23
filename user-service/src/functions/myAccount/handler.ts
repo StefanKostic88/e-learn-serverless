@@ -1,9 +1,12 @@
 import {
-  APIGatewayAuthorizerResultContext,
   APIGatewayProxyEvent,
   APIGatewayProxyHandler,
   Context,
 } from "aws-lambda";
+
+import { DynamoDbService } from "../../../../services/dynamoDb.service";
+
+const instanceOfDb = DynamoDbService.getInstance();
 
 export const myAccount: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent,
@@ -14,11 +17,15 @@ export const myAccount: APIGatewayProxyHandler = async (
   console.log(event);
   const xxx = event.requestContext.authorizer;
   console.log(xxx);
+  const userId = event.requestContext.authorizer.id;
+
+  const data = await instanceOfDb.getUserById(userId);
 
   return {
     statusCode: 200,
     body: JSON.stringify({
       message: "Working",
+      data,
       reqContext: xxx,
       event: event,
       context: context,

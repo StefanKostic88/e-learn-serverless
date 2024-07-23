@@ -1,5 +1,6 @@
 import {
   DynamoDBClient,
+  GetItemCommand,
   PutItemCommand,
   ScanCommand,
 } from "@aws-sdk/client-dynamodb";
@@ -97,5 +98,26 @@ export class DynamoDbService {
     } catch (error) {
       throw error;
     }
+  }
+
+  public async getUserById(userId: string) {
+    console.log(userId);
+
+    const userItem = await this.dbClient.send(
+      new GetItemCommand({
+        TableName: "arn:aws:dynamodb:eu-north-1:975049910354:table/Users",
+        Key: {
+          id: { S: userId },
+        },
+      })
+    );
+
+    if (!userItem.Item) {
+      throw new CustomError(`No user with id: ${userId} found`, 404);
+    }
+
+    const user = unmarshall(userItem.Item);
+
+    return user;
   }
 }
