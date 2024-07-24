@@ -5,8 +5,9 @@ import {
   StatementEffect,
 } from "aws-lambda";
 
-import { jwtServiceInstance } from "../../../../services/jwt.service";
+// import { jwtServiceInstance } from "../../../../services/jwt.service";
 import CustomError from "../../../../services/customError.service";
+import { userServiceInstance } from "../../../../services/user.service";
 
 const generatePolicy = (
   principalId: string,
@@ -19,7 +20,14 @@ const generatePolicy = (
     policyDocument: {
       Version: "2012-10-17",
       Statement: [
-        { Action: "execute-api:Invoke", Effect: effect, Resource: resource },
+        {
+          Action: "execute-api:Invoke",
+          Effect: effect,
+          Resource: [
+            "arn:aws:execute-api:eu-north-1:975049910354:lryie611ua/*/GET/myAccount",
+            "arn:aws:execute-api:eu-north-1:975049910354:lryie611ua/*/PATCH/change-password",
+          ],
+        },
       ],
     },
     context,
@@ -44,13 +52,18 @@ export const basicAuthorizer = async (
   const token = event.authorizationToken.split(" ")[1];
 
   try {
-    const decodedToken = (await jwtServiceInstance.verifyToken(token)) as {
+    const decodedToken = (await userServiceInstance.verifyUser(token)) as {
       id: string;
     };
+    // const decodedToken = (await jwtServiceInstance.verifyToken(token)) as {
+    //   id: string;
+    // };
     if (decodedToken.id) {
       const context: APIGatewayAuthorizerResultContext = {
         id: (decodedToken as { id: string }).id,
       };
+
+      console.log(event.methodArn);
 
       return generatePolicy("user", "Allow", event.methodArn, context);
     } else {

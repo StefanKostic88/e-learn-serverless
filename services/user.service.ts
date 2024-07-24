@@ -94,7 +94,7 @@ class UserService {
   public async loginUser(username: string, password: string) {
     try {
       const user = await this.dynamoDbService.findUserByUserName(username);
-      const candidatePassword = user.password;
+      const candidatePassword = user?.password;
 
       const isCorrect = await this.bcryptService.comparePasswords(
         password,
@@ -105,12 +105,16 @@ class UserService {
         throw new CustomError("Password is incorrect", 401);
       }
 
-      const token = await this.jwtService.createToken(user);
+      const token = user && (await this.jwtService.createToken(user));
 
       return token;
     } catch (error) {
       throw error;
     }
+  }
+
+  public async verifyUser(token: string) {
+    return await this.jwtService.verifyToken(token);
   }
 }
 

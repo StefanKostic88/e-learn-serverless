@@ -8,6 +8,7 @@ require("dotenv").config({
 import createUser from "@functions/createUser";
 import loginUser from "@functions/loginUser";
 import myAccount from "@functions/myAccount";
+import changePassword from "@functions/changePassword";
 
 const serverlessConfiguration: AWS = {
   service: "user-service",
@@ -41,7 +42,7 @@ const serverlessConfiguration: AWS = {
     ],
   },
   // import the function via paths
-  functions: { createUser, loginUser, myAccount },
+  functions: { createUser, loginUser, myAccount, changePassword },
 
   // resources: {
   //   Resources: {

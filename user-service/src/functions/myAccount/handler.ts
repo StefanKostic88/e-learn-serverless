@@ -13,10 +13,7 @@ export const myAccount: APIGatewayProxyHandler = async (
   context: Context
 ) => {
   // const userId = (context as unknown as APIGatewayAuthorizerResultContext).id;
-  console.log(context);
-  console.log(event);
-  const xxx = event.requestContext.authorizer;
-  console.log(xxx);
+
   const userId = event.requestContext.authorizer.id;
 
   const data = await instanceOfDb.getUserById(userId);
@@ -24,11 +21,7 @@ export const myAccount: APIGatewayProxyHandler = async (
   return {
     statusCode: 200,
     body: JSON.stringify({
-      message: "Working",
       data,
-      reqContext: xxx,
-      event: event,
-      context: context,
     }),
   };
 };
