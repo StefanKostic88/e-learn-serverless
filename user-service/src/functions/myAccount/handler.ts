@@ -4,9 +4,7 @@ import {
   Context,
 } from "aws-lambda";
 
-import { DynamoDbService } from "../../../../services/dynamoDb.service";
-
-const instanceOfDb = DynamoDbService.getInstance();
+import { userServiceInstance } from "../../../../services/user.service";
 
 export const myAccount: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent,
@@ -16,7 +14,7 @@ export const myAccount: APIGatewayProxyHandler = async (
 
   const userId = event.requestContext.authorizer.id;
 
-  const data = await instanceOfDb.getUserById(userId);
+  const data = await userServiceInstance.getUserById(userId);
 
   return {
     statusCode: 200,

@@ -116,6 +116,10 @@ class UserService {
   public async verifyUser(token: string) {
     return await this.jwtService.verifyToken(token);
   }
+
+  public async getUserById(id: string) {
+    return await this.dynamoDbService.getUserById(id);
+  }
 }
 
 export const userServiceInstance = UserService.getInstance();
