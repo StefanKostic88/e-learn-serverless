@@ -1,72 +1,27 @@
-import * as bcrypt from "bcryptjs";
-import * as generatePassword from "generate-password";
+// import * as bcrypt from "bcryptjs";
 import CustomError from "./customError.service";
 import {
   RegisterUser,
   CurrentUser,
 } from "../user-service/src/models/user.model";
 
-import { v4 } from "uuid";
 import { DynamoDbService } from "./dynamoDb.service";
-import { jwtServiceInstance } from "./jwt.service";
-
-const encryptPassword = async (password: string) => {
-  const hashedPass = await bcrypt.hash(password, 10);
-  return hashedPass;
-};
-
-const comparePasswords = async (
-  candidatePass: string,
-  encodedPass: string
-): Promise<boolean> => {
-  return await bcrypt.compare(candidatePass, encodedPass);
-};
-
-const generatePassowrdFunc = () => {
-  return generatePassword.generate({
-    length: 8,
-    numbers: true,
-    symbols: false,
-    uppercase: true,
-    lowercase: true,
-    excludeSimilarCharacters: false,
-  });
-};
-
-const generateUserName = (input: string = "AZ") => {
-  const slicedName = input.slice(0, 1) + input[input.length - 1];
-  return slicedName + "_" + v4().split("-")[0].slice(0, 4);
-};
-
-// const createToken = (user: Record<string, any>, expiresIn = "2h") => {
-//   const logedInUser = {
-//     user_id: user.id,
-//     username: user.username,
-//     firstName: user.firstName,
-//     role: user.role,
-//   };
-//   return new Promise((resolve, reject) => {
-//     jwt.sign(
-//       logedInUser,
-//       "super_secret_key",
-//       { expiresIn },
-//       (err: any, token: string) => {
-//         if (err || !token) {
-//           return reject(new Error("adasasd"));
-//         }
-
-//         resolve(token);
-//       }
-//     );
-//   });
-// };
+import { JwtService } from "./jwt.service";
+import { GeneratorService } from "./generator.service";
+import { BcryptService } from "./bcrypt.service";
 
 class UserService {
   public static instance: UserService;
   dynamoDbService: DynamoDbService;
+  generatorService: GeneratorService;
+  bcryptService: BcryptService;
+  jwtService: JwtService;
 
   private constructor() {
     this.dynamoDbService = DynamoDbService.getInstance();
+    this.generatorService = GeneratorService.getInstance();
+    this.bcryptService = BcryptService.getInstance();
+    this.jwtService = JwtService.getInstance();
   }
 
   public static getInstance() {
@@ -106,12 +61,17 @@ class UserService {
   }
 
   private async generateUserData(registerUser: RegisterUser) {
-    const password = generatePassowrdFunc();
-    const username = generateUserName(registerUser.firstName);
-    const passwordEncrypted = await encryptPassword(password);
+    const password = this.generatorService.generatePassword();
+
+    const { username, userId } = this.generatorService.generateUserName(
+      registerUser.firstName
+    );
+    const passwordEncrypted = await this.bcryptService.encryptPassword(
+      password
+    );
 
     const finalUserData: CurrentUser = {
-      id: v4(),
+      id: userId,
       firstName: registerUser.firstName,
       lastName: registerUser.lastName,
       email: registerUser.email,
@@ -133,22 +93,19 @@ class UserService {
 
   public async loginUser(username: string, password: string) {
     try {
-      // find user by username
-
       const user = await this.dynamoDbService.findUserByUserName(username);
       const candidatePassword = user.password;
 
-      const isCorrect = await comparePasswords(password, candidatePassword);
+      const isCorrect = await this.bcryptService.comparePasswords(
+        password,
+        candidatePassword
+      );
 
       if (!isCorrect) {
         throw new CustomError("Password is incorrect", 401);
       }
 
-      // const token = await createToken(user);
-      // console.log(token);
-
-      const token = await jwtServiceInstance.createToken(user);
-      console.log(token);
+      const token = await this.jwtService.createToken(user);
 
       return token;
     } catch (error) {

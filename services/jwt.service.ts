@@ -1,6 +1,6 @@
 import * as jwt from "jsonwebtoken";
 
-class JwtService {
+export class JwtService {
   public static instance: JwtService;
   private secret: string;
 
@@ -43,5 +43,3 @@ class JwtService {
     });
   }
 }
-
-export const jwtServiceInstance = JwtService.getInstance();
