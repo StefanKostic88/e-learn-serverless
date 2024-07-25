@@ -9,6 +9,7 @@ import createUser from "@functions/createUser";
 import loginUser from "@functions/loginUser";
 import myAccount from "@functions/myAccount";
 import changePassword from "@functions/changePassword";
+import editProfile from "@functions/editProfile";
 
 const serverlessConfiguration: AWS = {
   service: "user-service",
@@ -36,13 +37,14 @@ const serverlessConfiguration: AWS = {
           "dynamodb:GetItem",
           "dynamodb:Query",
           "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
         ],
         Resource: [process.env.USER_TABLE_ARN],
       },
     ],
   },
   // import the function via paths
-  functions: { createUser, loginUser, myAccount, changePassword },
+  functions: { createUser, loginUser, myAccount, changePassword, editProfile },
 
   // resources: {
   //   Resources: {

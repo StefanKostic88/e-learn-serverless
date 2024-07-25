@@ -4,23 +4,16 @@ import { middyfy } from "@libs/lambda";
 
 import schema from "./schema";
 
-import { userServiceInstance } from "../../../../services/user.service";
-
-const changePassword: ValidatedEventAPIGatewayProxyEvent<
-  typeof schema
-> = async (event) => {
+const editProfile: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
+  event
+) => {
   try {
-    const userId = event.requestContext.authorizer.id;
-
-    const message = await userServiceInstance.updateUserPassword(
-      userId,
-      event.body
-    );
-
     return {
       statusCode: 200,
       body: JSON.stringify({
-        message,
+        message: "Edit profile",
+        data: event.body,
+        userId: event.requestContext.authorizer.id,
       }),
     };
   } catch (error) {
@@ -33,4 +26,4 @@ const changePassword: ValidatedEventAPIGatewayProxyEvent<
   }
 };
 
-export const main = middyfy(changePassword);
+export const main = middyfy(editProfile);

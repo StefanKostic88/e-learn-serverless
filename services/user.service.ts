@@ -120,6 +120,49 @@ class UserService {
   public async getUserById(id: string) {
     return await this.dynamoDbService.getUserById(id);
   }
+
+  public async updateUserPassword(
+    userId: string,
+    data: {
+      newPassword: string;
+      confirmPassword: string;
+      currentPassword: string;
+    }
+  ) {
+    try {
+      const currentUser = await this.getUserById(userId);
+      const currentUserPassword = currentUser.password;
+
+      const passwordMatch = await this.bcryptService.comparePasswords(
+        data.currentPassword,
+        currentUserPassword
+      );
+
+      if (!passwordMatch) {
+        throw new CustomError("Password does not match", 401);
+      }
+
+      if (data.newPassword !== data.confirmPassword) {
+        throw new CustomError(
+          "New password and confirm password does not match",
+          401
+        );
+      }
+
+      const newPasswordEncrypted = await this.bcryptService.encryptPassword(
+        data.newPassword
+      );
+
+      await this.dynamoDbService.updateUserPassword(
+        currentUser.id,
+        newPasswordEncrypted
+      );
+
+      return "Password successfully updated.";
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const userServiceInstance = UserService.getInstance();

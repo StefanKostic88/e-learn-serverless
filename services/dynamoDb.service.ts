@@ -3,6 +3,7 @@ import {
   GetItemCommand,
   PutItemCommand,
   ScanCommand,
+  UpdateItemCommand,
 } from "@aws-sdk/client-dynamodb";
 import { CurrentUser } from "../user-service/src/models/user.model";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
@@ -116,8 +117,30 @@ export class DynamoDbService {
       throw new CustomError(`No user with id: ${userId} found`, 404);
     }
 
-    const user = unmarshall(userItem.Item);
+    const user = unmarshall(userItem.Item) as CurrentUser;
 
     return user;
+  }
+
+  public async updateUserPassword(userId: string, newPassword: string) {
+    try {
+      await this.dbClient.send(
+        new UpdateItemCommand({
+          TableName: "arn:aws:dynamodb:eu-north-1:975049910354:table/Users",
+          Key: {
+            id: { S: userId },
+          },
+          UpdateExpression: "set #password = :password",
+          ExpressionAttributeNames: {
+            "#password": "password",
+          },
+          ExpressionAttributeValues: {
+            ":password": { S: newPassword },
+          },
+        })
+      );
+    } catch (error) {
+      throw error;
+    }
   }
 }
