@@ -26,6 +26,7 @@ const generatePolicy = (
           Resource: [
             "arn:aws:execute-api:eu-north-1:975049910354:lryie611ua/*/GET/myAccount",
             "arn:aws:execute-api:eu-north-1:975049910354:lryie611ua/*/PATCH/change-password",
+            "arn:aws:execute-api:eu-north-1:975049910354:lryie611ua/*/PATCH/edit",
           ],
         },
       ],
