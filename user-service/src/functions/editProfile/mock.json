@@ -1,0 +1,6 @@
+{
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": "{\"firstName\": \"Stefa\", \"lastName\": \"Kocic\", \"email\": \"aswes@dasd.com\", \"username\": \"jovi555\", \"adress\": \"kneza ivana 52\", \"dateOfBirth\": \"12-11-1988\", \"specialization\": \"React\"}"
+}

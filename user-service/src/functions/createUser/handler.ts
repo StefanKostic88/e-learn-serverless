@@ -15,12 +15,13 @@ const createUser: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
     // In case firstName, lastName or email are missing we get {"message": "Invalid request body"}
 
     await userServiceInstance.checkIfUserExists(registerUser);
-    await userServiceInstance.createUser(registerUser);
+    const data = await userServiceInstance.createUser(registerUser);
 
     return {
       statusCode: 201,
       body: JSON.stringify({
         message: `User created`,
+        data,
       }),
     };
   } catch (error) {

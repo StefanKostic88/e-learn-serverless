@@ -55,6 +55,7 @@ export const basicAuthorizer = async (
   try {
     const decodedToken = (await userServiceInstance.verifyUser(token)) as {
       id: string;
+      role: string;
     };
     // const decodedToken = (await jwtServiceInstance.verifyToken(token)) as {
     //   id: string;
@@ -62,6 +63,7 @@ export const basicAuthorizer = async (
     if (decodedToken.id) {
       const context: APIGatewayAuthorizerResultContext = {
         id: (decodedToken as { id: string }).id,
+        role: (decodedToken as { role: string }).role,
       };
 
       console.log(event.methodArn);

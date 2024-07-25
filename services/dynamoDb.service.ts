@@ -143,4 +143,44 @@ export class DynamoDbService {
       throw error;
     }
   }
+
+  public async updateUser(userId: string, userData: Record<string, any>) {
+    try {
+      const updatedExpresion =
+        "set " +
+        Object.keys(userData)
+          .map((attr) => `#${attr} = :${attr}`)
+          .join(", ");
+
+      const expressionAttributeNames = Object.keys(userData).reduce(
+        (acc, attr) => {
+          acc[`#${attr}`] = attr;
+          return acc;
+        },
+        {} as { [key: string]: string }
+      );
+
+      const expressionAttributeValues = Object.keys(userData).reduce(
+        (acc, attr) => {
+          acc[`:${attr}`] = { S: userData[attr] };
+          return acc;
+        },
+        {} as { [key: string]: any }
+      );
+
+      await this.dbClient.send(
+        new UpdateItemCommand({
+          TableName: "arn:aws:dynamodb:eu-north-1:975049910354:table/Users",
+          Key: {
+            id: { S: userId },
+          },
+          UpdateExpression: updatedExpresion,
+          ExpressionAttributeNames: expressionAttributeNames,
+          ExpressionAttributeValues: expressionAttributeValues,
+        })
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
 }

@@ -11,6 +11,7 @@ export class JwtService {
   public createToken(user: Record<string, any>, expiresIn = "2h") {
     const currentUser = {
       id: (user as { id: string }).id,
+      role: (user as { role: string }).role,
     };
 
     return new Promise((resolve, reject) => {

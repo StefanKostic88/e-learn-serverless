@@ -27,3 +27,12 @@ export interface LoginData {
   username: string;
   password: string;
 }
+
+export interface UpdateDataStudent {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  username?: string;
+  address?: string;
+  dateOfBirth?: string;
+}

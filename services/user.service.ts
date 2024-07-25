@@ -3,6 +3,7 @@ import CustomError from "./customError.service";
 import {
   RegisterUser,
   CurrentUser,
+  UpdateDataStudent,
 } from "../user-service/src/models/user.model";
 
 import { DynamoDbService } from "./dynamoDb.service";
@@ -52,9 +53,13 @@ class UserService {
         throw new CustomError("Specialization required", 400);
       }
 
-      const userData = await this.generateUserData(registerUser);
-      const userRecord = await this.dynamoDbService.createUserInTable(userData);
-      return userRecord;
+      const {
+        finalUserData: userData,
+        password,
+        username,
+      } = await this.generateUserData(registerUser);
+      await this.dynamoDbService.createUserInTable(userData);
+      return { password, username };
     } catch (error) {
       throw error;
     }
@@ -88,7 +93,7 @@ class UserService {
       isActive: true,
     };
 
-    return finalUserData;
+    return { finalUserData, password, username };
   }
 
   public async loginUser(username: string, password: string) {
@@ -159,6 +164,55 @@ class UserService {
       );
 
       return "Password successfully updated.";
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async updateUserData(
+    userId: string,
+    userData: Record<string, any>,
+    role: string
+  ) {
+    try {
+      let finalData: UpdateDataStudent = {};
+
+      if (role === "student" && userData.specialization) {
+        const { specialization, ...restOfProps } = userData;
+        finalData = { ...restOfProps };
+      } else {
+        finalData = { ...userData };
+      }
+
+      await this.dynamoDbService.updateUser(
+        userId,
+        finalData as Record<string, any>
+      );
+      return "User succsesfully updated.";
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public checkAllProps(propsArr: string[]) {
+    try {
+      const allowedProps = [
+        "firstName",
+        "lastName",
+        "email",
+        "username",
+        "address",
+        "dateOfBirth",
+        "specialization",
+      ];
+      const validProps = propsArr.every((prop) => allowedProps.includes(prop));
+      const errorMessage =
+        "Invalid request body, valid properties are: " +
+        allowedProps.map((props) => props).join(", ");
+
+      if (!validProps) {
+        throw new CustomError(`${errorMessage}.`, 400);
+      }
     } catch (error) {
       throw error;
     }
