@@ -13,6 +13,10 @@ export default {
             "application/json": schema,
           },
         },
+        authorizer: {
+          name: "trainingBasicAuthorizer",
+          arn: "arn:aws:lambda:eu-north-1:975049910354:function:authorization-service-dev-basicAuthorizer",
+        },
       },
     },
   ],

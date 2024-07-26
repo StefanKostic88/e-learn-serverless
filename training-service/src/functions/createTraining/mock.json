@@ -2,5 +2,5 @@
   "headers": {
     "Content-Type": "application/json"
   },
-  "body": "{\"name\": \"Frederic\"}"
+  "body": "{\"trainer_id\": \"66597c62f3fea3a3a736dd4f\", \"student_id\": \"66597caaf3fea3a3a736dd5a\", \"trainingType\": \"Webinar\", \"trainingName\": \"React-Advanced\", \"startDate\": \"27-7-2024\", \"duration\": \"5d\", \"specialization\": \"React\"}"
 }

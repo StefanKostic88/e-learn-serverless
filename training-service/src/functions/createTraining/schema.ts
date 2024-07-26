@@ -1,7 +1,21 @@
 export default {
   type: "object",
   properties: {
-    name: { type: 'string' }
+    trainer_id: { type: "string" },
+    student_id: { type: "string" },
+    trainingType: { type: "string" },
+    duration: { type: "string" },
+    specialization: { type: "string" },
+    trainingName: { type: "string" },
+    startDate: { type: "string" },
   },
-  required: ['name']
+  required: [
+    "trainer_id",
+    "student_id",
+    "trainingType",
+    "duration",
+    "specialization",
+    "trainingName",
+    "startDate",
+  ],
 } as const;
