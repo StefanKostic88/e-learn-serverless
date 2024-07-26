@@ -4,6 +4,8 @@ import { middyfy } from "@libs/lambda";
 
 import schema from "./schema";
 
+import { trainingServiceInstance } from "../../../../services/training.service";
+
 const createTraining: ValidatedEventAPIGatewayProxyEvent<
   typeof schema
 > = async (event) => {
@@ -25,24 +27,8 @@ const createTraining: ValidatedEventAPIGatewayProxyEvent<
 
   const userId = event.requestContext.authorizer.id;
   const role = event.requestContext.authorizer.role;
-
-  const { startDate: dateString } = event.body;
-  const [day, month, year] = dateString.split("-");
-  const currentDate = new Date();
-  const convertToDate = new Date(`${year}-${month}-${day}`);
-
-  if (convertToDate >= currentDate) {
-    console.log("The startDate is not older than today.");
-  } else {
-    console.log("The startDate is older than today.");
-  }
-
-  const localeString = convertToDate.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "long",
-    year: "2-digit",
-  });
-  console.log(localeString);
+  const trainingData = event.body;
+  await trainingServiceInstance.createTraining(trainingData);
 
   try {
     return {
