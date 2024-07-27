@@ -6,6 +6,8 @@ require("dotenv").config({
 });
 
 import createTraining from "@functions/createTraining";
+import allTrainings from "@functions/allTrainings";
+import myTrainings from "@functions/myTrainings";
 
 const serverlessConfiguration: AWS = {
   service: "training-service",
@@ -42,7 +44,7 @@ const serverlessConfiguration: AWS = {
     ],
   },
   // import the function via paths
-  functions: { createTraining },
+  functions: { createTraining, allTrainings, myTrainings },
   package: { individually: true },
   custom: {
     esbuild: {

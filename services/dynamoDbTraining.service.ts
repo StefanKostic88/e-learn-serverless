@@ -1,6 +1,11 @@
-import { DynamoDBClient, PutItemCommand } from "@aws-sdk/client-dynamodb";
+import {
+  DynamoDBClient,
+  PutItemCommand,
+  ScanCommand,
+} from "@aws-sdk/client-dynamodb";
 import { TrainingCreationAttributes } from "../models/training.model";
 import { v4 } from "uuid";
+import { unmarshall } from "@aws-sdk/util-dynamodb";
 
 export class DynamoDbTrainingService {
   public static instance: DynamoDbTrainingService;
@@ -45,4 +50,75 @@ export class DynamoDbTrainingService {
       throw error;
     }
   }
+
+  public async getAllTrainings() {
+    try {
+      const trainingItems = await this.dbClient.send(
+        new ScanCommand({
+          TableName: this.tableArn,
+        })
+      );
+
+      const allTrainings = trainingItems.Items.map((item) => unmarshall(item));
+
+      return allTrainings;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async myTrainingsAsStudent(userId: string) {
+    try {
+      const scanCommand = this.generateScanComand(userId, "student_id");
+
+      const myTrainingsItems = await this.dbClient.send(
+        new ScanCommand(scanCommand)
+      );
+
+      const myTrainings = myTrainingsItems.Items.map((item) =>
+        unmarshall(item)
+      );
+      return myTrainings;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async myTrainingsAsTrainer(userId: string) {
+    try {
+      const scanCommand = this.generateScanComand(userId, "trainer_id");
+
+      const myTrainingsItems = await this.dbClient.send(
+        new ScanCommand(scanCommand)
+      );
+
+      const myTrainings = myTrainingsItems.Items.map((item) =>
+        unmarshall(item)
+      );
+      return myTrainings;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  private generateScanComand(userId: string, propName: string) {
+    const filterExpression = `${propName} = :${propName}`;
+    const expressionAttributeValue = `:${propName}`;
+
+    return {
+      TableName: this.tableArn,
+      FilterExpression: filterExpression,
+      ExpressionAttributeValues: {
+        [expressionAttributeValue]: { S: userId },
+      },
+    };
+  }
 }
+
+// {
+//   TableName: this.tableArn,
+//   FilterExpression: "student_id = :student_id",
+//   ExpressionAttributeValues: {
+//     ":student_id": { S: userId },
+//   },
+// }

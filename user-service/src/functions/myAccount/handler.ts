@@ -1,17 +1,10 @@
-import {
-  APIGatewayProxyEvent,
-  APIGatewayProxyHandler,
-  Context,
-} from "aws-lambda";
+import { APIGatewayProxyEvent, APIGatewayProxyHandler } from "aws-lambda";
 
 import { userServiceInstance } from "../../../../services/user.service";
 
 export const myAccount: APIGatewayProxyHandler = async (
-  event: APIGatewayProxyEvent,
-  context: Context
+  event: APIGatewayProxyEvent
 ) => {
-  // const userId = (context as unknown as APIGatewayAuthorizerResultContext).id;
-
   const userId = event.requestContext.authorizer.id;
 
   const data = await userServiceInstance.getUserById(userId);
