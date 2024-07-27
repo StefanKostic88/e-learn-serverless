@@ -3,7 +3,7 @@ export interface TrainingCreationAttributes {
   student_id: string;
   trainingType: string;
   duration: string;
-  specialization: string;
+  specialization?: string;
   trainingName: string;
   startDate: string;
 }

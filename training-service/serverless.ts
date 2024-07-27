@@ -26,6 +26,20 @@ const serverlessConfiguration: AWS = {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: "1",
       NODE_OPTIONS: "--enable-source-maps --stack-trace-limit=1000",
     },
+    iamRoleStatements: [
+      {
+        Effect: "Allow",
+        Action: [
+          "lambda:InvokeFunction",
+          "dynamodb:Scan",
+          "dynamodb:GetItem",
+          "dynamodb:Query",
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+        ],
+        Resource: [process.env.TRAINING_TABLE_ARN],
+      },
+    ],
   },
   // import the function via paths
   functions: { createTraining },
