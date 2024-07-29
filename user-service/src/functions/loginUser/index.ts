@@ -8,6 +8,11 @@ export default {
       http: {
         method: "post",
         path: "login",
+        cors: {
+          origin: "*",
+          headers: ["Content-Type"],
+          allowCredentials: false,
+        },
         request: {
           schemas: {
             "application/json": schema,
@@ -17,3 +22,8 @@ export default {
     },
   ],
 };
+
+// "X-Amz-Date",
+// "Authorization",
+// "X-Api-Key",
+// "X-Amz-Security-Token",
