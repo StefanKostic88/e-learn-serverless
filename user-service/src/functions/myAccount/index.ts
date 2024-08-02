@@ -7,6 +7,11 @@ export default {
       http: {
         method: "get",
         path: "myAccount",
+        cors: {
+          origin: "*",
+          headers: ["Content-Type", "Authorization"],
+          allowCredentials: false,
+        },
         authorizer: {
           arn: "arn:aws:lambda:eu-north-1:975049910354:function:authorization-service-dev-basicAuthorizer",
         },

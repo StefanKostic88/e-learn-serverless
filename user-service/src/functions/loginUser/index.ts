@@ -10,7 +10,7 @@ export default {
         path: "login",
         cors: {
           origin: "*",
-          headers: ["Content-Type"],
+          headers: ["Content-Type", "Authorization"],
           allowCredentials: false,
         },
         request: {
