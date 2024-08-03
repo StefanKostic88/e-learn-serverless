@@ -21,6 +21,7 @@ export interface CurrentUser {
   isActive: boolean;
   id: string;
   img?: string;
+  myUsers: string[];
 }
 
 export interface LoginData {

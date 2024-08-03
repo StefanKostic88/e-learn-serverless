@@ -21,6 +21,7 @@ export const myAccount: APIGatewayProxyHandler = async (
     body: JSON.stringify({
       data,
       headers,
+      test: data.myUsers,
     }),
   };
 };

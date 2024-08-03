@@ -5,21 +5,25 @@ import { middyfy } from "@libs/lambda";
 import schema from "./schema";
 
 import { trainingServiceInstance } from "../../../../services/training.service";
+import { userServiceInstance } from "../../../../services/user.service";
 
 const createTraining: ValidatedEventAPIGatewayProxyEvent<
   typeof schema
 > = async (event) => {
   // const userId = event.requestContext.authorizer.id;
-  // const role = event.requestContext.authorizer.role;
+  const role = event.requestContext.authorizer.role;
 
   try {
     const trainingData = event.body;
 
     await trainingServiceInstance.createTraining(trainingData);
+    await userServiceInstance.addToMyUsers(trainingData, role);
+
     return {
       statusCode: 201,
       body: JSON.stringify({
         message: `Training created`,
+        role,
       }),
     };
   } catch (error) {

@@ -39,7 +39,7 @@ const serverlessConfiguration: AWS = {
           "dynamodb:PutItem",
           "dynamodb:UpdateItem",
         ],
-        Resource: [process.env.TRAINING_TABLE_ARN],
+        Resource: [process.env.TRAINING_TABLE_ARN, process.env.USER_TABLE_ARN],
       },
     ],
   },

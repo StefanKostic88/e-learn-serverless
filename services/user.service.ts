@@ -10,6 +10,7 @@ import { DynamoDbService } from "./dynamoDb.service";
 import { JwtService } from "./jwt.service";
 import { GeneratorService } from "./generator.service";
 import { BcryptService } from "./bcrypt.service";
+import { TrainingCreationAttributes } from "../models/training.model";
 
 class UserService {
   public static instance: UserService;
@@ -91,6 +92,7 @@ class UserService {
       username,
       img: undefined,
       isActive: true,
+      myUsers: [],
     };
 
     return { finalUserData, password, username };
@@ -123,7 +125,11 @@ class UserService {
   }
 
   public async getUserById(id: string) {
-    return await this.dynamoDbService.getUserById(id);
+    try {
+      return await this.dynamoDbService.getUserById(id);
+    } catch (error) {
+      throw error;
+    }
   }
 
   public async updateUserPassword(
@@ -229,6 +235,20 @@ class UserService {
   public async getAllStudents() {
     try {
       return await this.dynamoDbService.getUsersByRole("student");
+    } catch (error) {
+      throw error;
+    }
+  }
+  public async addToMyUsers(data: TrainingCreationAttributes, role: string) {
+    try {
+      const traineId = data.trainer_id;
+      const studentId = data.student_id;
+
+      if (role === "trainer") {
+        await this.dynamoDbService.addUserToArray(traineId, studentId);
+      } else {
+        await this.dynamoDbService.addUserToArray(studentId, studentId);
+      }
     } catch (error) {
       throw error;
     }

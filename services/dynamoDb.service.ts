@@ -102,8 +102,6 @@ export class DynamoDbService {
   }
 
   public async getUserById(userId: string) {
-    console.log(userId);
-
     const userItem = await this.dbClient.send(
       new GetItemCommand({
         TableName: "arn:aws:dynamodb:eu-north-1:975049910354:table/Users",
@@ -204,5 +202,54 @@ export class DynamoDbService {
     } catch (error) {
       throw error;
     }
+  }
+
+  public async addUserToArray(userId: string, addedUser: string) {
+    const currentUser = await this.getUserById(userId);
+    const currentlyAddedUser = await this.getUserById(addedUser);
+
+    let myUsersArray = currentUser.myUsers || [];
+    let myCurrentlyAddedUsersArray = currentlyAddedUser.myUsers || [];
+
+    myUsersArray.push(addedUser);
+    myCurrentlyAddedUsersArray.push(userId);
+
+    myUsersArray = Array.from(new Set(myUsersArray));
+    myCurrentlyAddedUsersArray = Array.from(
+      new Set(myCurrentlyAddedUsersArray)
+    );
+
+    await this.dbClient.send(
+      new UpdateItemCommand({
+        TableName: "arn:aws:dynamodb:eu-north-1:975049910354:table/Users",
+        Key: {
+          id: { S: userId },
+        },
+        UpdateExpression: "set #myUsers = :myUsers",
+        ExpressionAttributeNames: {
+          "#myUsers": "myUsers",
+        },
+        ExpressionAttributeValues: {
+          ":myUsers": { L: myUsersArray.map((userId) => ({ S: userId })) },
+        },
+      })
+    );
+    await this.dbClient.send(
+      new UpdateItemCommand({
+        TableName: "arn:aws:dynamodb:eu-north-1:975049910354:table/Users",
+        Key: {
+          id: { S: addedUser },
+        },
+        UpdateExpression: "set #myUsers = :myUsers",
+        ExpressionAttributeNames: {
+          "#myUsers": "myUsers",
+        },
+        ExpressionAttributeValues: {
+          ":myUsers": {
+            L: myCurrentlyAddedUsersArray.map((userId) => ({ S: userId })),
+          },
+        },
+      })
+    );
   }
 }
