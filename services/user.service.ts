@@ -217,6 +217,22 @@ class UserService {
       throw error;
     }
   }
+
+  public async getAllTrainers() {
+    try {
+      return await this.dynamoDbService.getUsersByRole("trainer");
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async getAllStudents() {
+    try {
+      return await this.dynamoDbService.getUsersByRole("student");
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const userServiceInstance = UserService.getInstance();

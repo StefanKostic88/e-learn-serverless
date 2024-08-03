@@ -10,6 +10,8 @@ import loginUser from "@functions/loginUser";
 import myAccount from "@functions/myAccount";
 import changePassword from "@functions/changePassword";
 import editProfile from "@functions/editProfile";
+import allTrainers from "@functions/allTrainers";
+import allStudents from "@functions/allStudents";
 
 const serverlessConfiguration: AWS = {
   service: "user-service",
@@ -44,7 +46,15 @@ const serverlessConfiguration: AWS = {
     ],
   },
   // import the function via paths
-  functions: { createUser, loginUser, myAccount, changePassword, editProfile },
+  functions: {
+    createUser,
+    loginUser,
+    myAccount,
+    changePassword,
+    editProfile,
+    allTrainers,
+    allStudents,
+  },
 
   package: { individually: true },
   custom: {

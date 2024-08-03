@@ -8,6 +8,11 @@ export default {
       http: {
         method: "patch",
         path: "edit",
+        cors: {
+          origin: "*",
+          headers: ["Content-Type", "Authorization"],
+          allowCredentials: false,
+        },
         request: {
           schemas: {
             "application/json": schema,

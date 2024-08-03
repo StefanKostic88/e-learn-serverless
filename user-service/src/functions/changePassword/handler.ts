@@ -9,6 +9,11 @@ import { userServiceInstance } from "../../../../services/user.service";
 const changePassword: ValidatedEventAPIGatewayProxyEvent<
   typeof schema
 > = async (event) => {
+  const headers = {
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "OPTIONS,POST",
+  };
   try {
     const userId = event.requestContext.authorizer.id;
 
@@ -19,15 +24,19 @@ const changePassword: ValidatedEventAPIGatewayProxyEvent<
 
     return {
       statusCode: 200,
+      headers,
       body: JSON.stringify({
         message,
+        headers,
       }),
     };
   } catch (error) {
     return {
       statusCode: error.statusCode,
+      headers,
       body: JSON.stringify({
         message: error.message,
+        headers,
       }),
     };
   }

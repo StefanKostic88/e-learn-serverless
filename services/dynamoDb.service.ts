@@ -183,4 +183,26 @@ export class DynamoDbService {
       throw error;
     }
   }
+
+  public async getUsersByRole(role: "student" | "trainer") {
+    try {
+      const usersItems = await this.dbClient.send(
+        new ScanCommand({
+          TableName: "arn:aws:dynamodb:eu-north-1:975049910354:table/Users",
+          FilterExpression: "#r = :role",
+          ExpressionAttributeNames: {
+            "#r": "role",
+          },
+          ExpressionAttributeValues: {
+            ":role": { S: role },
+          },
+        })
+      );
+
+      const users = usersItems.Items.map((item) => unmarshall(item));
+      return users;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

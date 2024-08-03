@@ -1,22 +1,16 @@
-import schema from "./schema";
 import { handlerPath } from "@libs/handler-resolver";
 
 export default {
-  handler: `${handlerPath(__dirname)}/handler.main`,
+  handler: `${handlerPath(__dirname)}/handler.allTrainings`,
   events: [
     {
       http: {
-        method: "post",
-        path: "users",
+        method: "get",
+        path: "trainers",
         cors: {
           origin: "*",
           headers: ["Content-Type", "Authorization"],
           allowCredentials: false,
-        },
-        request: {
-          schemas: {
-            "application/json": schema,
-          },
         },
       },
     },
