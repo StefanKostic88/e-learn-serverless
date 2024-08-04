@@ -16,8 +16,8 @@ const createTraining: ValidatedEventAPIGatewayProxyEvent<
   try {
     const trainingData = event.body;
 
-    await trainingServiceInstance.createTraining(trainingData);
     await userServiceInstance.addToMyUsers(trainingData, role);
+    await trainingServiceInstance.createTraining(trainingData);
 
     return {
       statusCode: 201,

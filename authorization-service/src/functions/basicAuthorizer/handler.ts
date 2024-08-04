@@ -29,6 +29,7 @@ const generatePolicy = (
             "arn:aws:execute-api:eu-north-1:975049910354:lryie611ua/*/PATCH/edit",
             "arn:aws:execute-api:eu-north-1:975049910354:lryie611ua/*/POST/create-training",
             "arn:aws:execute-api:eu-north-1:975049910354:lryie611ua/*/GET/my-trainings",
+            "arn:aws:execute-api:eu-north-1:975049910354:lryie611ua/*/GET/my-users",
           ],
         },
       ],

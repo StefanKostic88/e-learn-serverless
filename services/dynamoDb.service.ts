@@ -197,7 +197,7 @@ export class DynamoDbService {
         })
       );
 
-      const users = usersItems.Items.map((item) => unmarshall(item));
+      const users = usersItems.Items?.map((item) => unmarshall(item));
       return users;
     } catch (error) {
       throw error;
@@ -207,6 +207,10 @@ export class DynamoDbService {
   public async addUserToArray(userId: string, addedUser: string) {
     const currentUser = await this.getUserById(userId);
     const currentlyAddedUser = await this.getUserById(addedUser);
+
+    if (!currentlyAddedUser) {
+      throw new CustomError("Candidate user does not exist", 400);
+    }
 
     let myUsersArray = currentUser.myUsers || [];
     let myCurrentlyAddedUsersArray = currentlyAddedUser.myUsers || [];
@@ -251,5 +255,21 @@ export class DynamoDbService {
         },
       })
     );
+  }
+
+  public async getMyUsers(userId: string) {
+    try {
+      const currentUser = await this.getUserById(userId);
+      const myUsers = await Promise.all(
+        currentUser.myUsers.map(async (addedUserId) => {
+          const newData = await this.getUserById(addedUserId);
+
+          return newData;
+        })
+      );
+      return myUsers;
+    } catch (error) {
+      throw error;
+    }
   }
 }

@@ -253,6 +253,15 @@ class UserService {
       throw error;
     }
   }
+
+  public async getMyUsers(userId: string) {
+    try {
+      const data = await this.dynamoDbService.getMyUsers(userId);
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const userServiceInstance = UserService.getInstance();
