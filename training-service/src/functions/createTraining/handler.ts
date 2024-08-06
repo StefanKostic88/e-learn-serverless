@@ -16,7 +16,6 @@ const createTraining: ValidatedEventAPIGatewayProxyEvent<
   try {
     const trainingData = event.body;
 
-    await userServiceInstance.addToMyUsers(trainingData, role);
     await trainingServiceInstance.createTraining(trainingData);
 
     return {

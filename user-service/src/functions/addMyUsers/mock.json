@@ -1,0 +1,6 @@
+{
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "body": "{\"myUsers\": [\"ce11093a-906e-4263-8250-3dec5409a6d9\", \"c567ac93-fe42-42ff-bfb9-d44a90f6deb2\"]}"
+}

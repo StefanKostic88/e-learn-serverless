@@ -31,10 +31,17 @@ export class DynamoDbTrainingService {
       student_id: { S: data.student_id },
       trainingType: { S: data.trainingType },
       trainingName: { S: data.trainingName },
+      trainerName: { S: data.trainerName },
+      studentName: { S: data.studentName },
+
       startDate: { S: new Date(data.startDate).toISOString() },
       duration: { S: data.duration },
       ...(data.specialization && {
         specialization: { S: data.specialization },
+      }),
+
+      ...(data.description && {
+        description: { S: data.description },
       }),
     };
 
@@ -59,7 +66,7 @@ export class DynamoDbTrainingService {
         })
       );
 
-      const allTrainings = trainingItems.Items.map((item) => unmarshall(item));
+      const allTrainings = trainingItems.Items?.map((item) => unmarshall(item));
 
       return allTrainings;
     } catch (error) {
@@ -75,7 +82,7 @@ export class DynamoDbTrainingService {
         new ScanCommand(scanCommand)
       );
 
-      const myTrainings = myTrainingsItems.Items.map((item) =>
+      const myTrainings = myTrainingsItems.Items?.map((item) =>
         unmarshall(item)
       );
       return myTrainings;
@@ -92,7 +99,7 @@ export class DynamoDbTrainingService {
         new ScanCommand(scanCommand)
       );
 
-      const myTrainings = myTrainingsItems.Items.map((item) =>
+      const myTrainings = myTrainingsItems.Items?.map((item) =>
         unmarshall(item)
       );
       return myTrainings;

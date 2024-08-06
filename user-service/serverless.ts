@@ -13,6 +13,7 @@ import editProfile from "@functions/editProfile";
 import allTrainers from "@functions/allTrainers";
 import allStudents from "@functions/allStudents";
 import myUsers from "@functions/myUsers";
+import addMyUsers from "@functions/addMyUsers";
 
 const serverlessConfiguration: AWS = {
   service: "user-service",
@@ -56,6 +57,7 @@ const serverlessConfiguration: AWS = {
     allTrainers,
     allStudents,
     myUsers,
+    addMyUsers,
   },
 
   package: { individually: true },

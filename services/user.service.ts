@@ -239,16 +239,9 @@ class UserService {
       throw error;
     }
   }
-  public async addToMyUsers(data: TrainingCreationAttributes, role: string) {
+  public async addToMyUsers(userId: string, addedUsers: string[]) {
     try {
-      const traineId = data.trainer_id;
-      const studentId = data.student_id;
-
-      if (role === "trainer") {
-        await this.dynamoDbService.addUserToArray(traineId, studentId);
-      } else {
-        await this.dynamoDbService.addUserToArray(studentId, studentId);
-      }
+      await this.dynamoDbService.addUserToArray(userId, addedUsers);
     } catch (error) {
       throw error;
     }

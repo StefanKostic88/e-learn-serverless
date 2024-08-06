@@ -6,6 +6,9 @@ export interface TrainingCreationAttributes {
   specialization?: string;
   trainingName: string;
   startDate: string;
+  trainerName: string;
+  studentName: string;
+  description?: string;
 }
 
 type TrainingWithoutStartDate = Omit<TrainingCreationAttributes, "startDate">;

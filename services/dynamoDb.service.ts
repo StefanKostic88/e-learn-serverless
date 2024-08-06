@@ -204,66 +204,73 @@ export class DynamoDbService {
     }
   }
 
-  public async addUserToArray(userId: string, addedUser: string) {
-    const currentUser = await this.getUserById(userId);
-    const currentlyAddedUser = await this.getUserById(addedUser);
+  public async addUserToArray(userId: string, addedUsers: string[]) {
+    try {
+      const currentUser = await this.getUserById(userId);
 
-    if (!currentlyAddedUser) {
-      throw new CustomError("Candidate user does not exist", 400);
+      addedUsers.forEach(async (addedUserId) => {
+        const currentlyAddedUser = await this.getUserById(addedUserId);
+        if (!currentlyAddedUser) {
+          throw new CustomError("Candidate user does not exist", 400);
+        }
+        let myCurrentlyAddedUsersArray = currentlyAddedUser.myUsers || [];
+        myCurrentlyAddedUsersArray.push(userId);
+        myCurrentlyAddedUsersArray = Array.from(
+          new Set(myCurrentlyAddedUsersArray)
+        );
+
+        await this.dbClient.send(
+          new UpdateItemCommand(
+            this.generateMyUsersUpdateCommand(
+              addedUserId,
+              myCurrentlyAddedUsersArray
+            )
+          )
+        );
+      });
+
+      let myUsersArray = currentUser.myUsers || [];
+      myUsersArray.push(...addedUsers);
+      myUsersArray = Array.from(new Set(myUsersArray));
+
+      await this.dbClient.send(
+        new UpdateItemCommand(
+          this.generateMyUsersUpdateCommand(userId, myUsersArray)
+        )
+      );
+    } catch (error) {
+      throw error;
     }
+  }
 
-    let myUsersArray = currentUser.myUsers || [];
-    let myCurrentlyAddedUsersArray = currentlyAddedUser.myUsers || [];
+  public generateMyUsersUpdateCommand(
+    currentUserId: string,
+    myUsersArray: string[]
+  ) {
+    const updateComand = {
+      TableName: "arn:aws:dynamodb:eu-north-1:975049910354:table/Users",
+      Key: {
+        id: { S: currentUserId },
+      },
+      UpdateExpression: "set #myUsers = :myUsers",
+      ExpressionAttributeNames: {
+        "#myUsers": "myUsers",
+      },
+      ExpressionAttributeValues: {
+        ":myUsers": { L: myUsersArray.map((myUserId) => ({ S: myUserId })) },
+      },
+    };
 
-    myUsersArray.push(addedUser);
-    myCurrentlyAddedUsersArray.push(userId);
-
-    myUsersArray = Array.from(new Set(myUsersArray));
-    myCurrentlyAddedUsersArray = Array.from(
-      new Set(myCurrentlyAddedUsersArray)
-    );
-
-    await this.dbClient.send(
-      new UpdateItemCommand({
-        TableName: "arn:aws:dynamodb:eu-north-1:975049910354:table/Users",
-        Key: {
-          id: { S: userId },
-        },
-        UpdateExpression: "set #myUsers = :myUsers",
-        ExpressionAttributeNames: {
-          "#myUsers": "myUsers",
-        },
-        ExpressionAttributeValues: {
-          ":myUsers": { L: myUsersArray.map((userId) => ({ S: userId })) },
-        },
-      })
-    );
-    await this.dbClient.send(
-      new UpdateItemCommand({
-        TableName: "arn:aws:dynamodb:eu-north-1:975049910354:table/Users",
-        Key: {
-          id: { S: addedUser },
-        },
-        UpdateExpression: "set #myUsers = :myUsers",
-        ExpressionAttributeNames: {
-          "#myUsers": "myUsers",
-        },
-        ExpressionAttributeValues: {
-          ":myUsers": {
-            L: myCurrentlyAddedUsersArray.map((userId) => ({ S: userId })),
-          },
-        },
-      })
-    );
+    return updateComand;
   }
 
   public async getMyUsers(userId: string) {
     try {
       const currentUser = await this.getUserById(userId);
+      const myUsersArray = currentUser.myUsers || [];
       const myUsers = await Promise.all(
-        currentUser.myUsers.map(async (addedUserId) => {
+        myUsersArray.map(async (addedUserId) => {
           const newData = await this.getUserById(addedUserId);
-
           return newData;
         })
       );
