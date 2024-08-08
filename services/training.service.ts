@@ -43,17 +43,28 @@ class TrainingService {
     }
   }
 
-  public async getMyTrainings(userId: string, role: "student" | "trainer") {
+  public async getMyTrainings(
+    userId: string,
+    role: "student" | "trainer",
+    params: {
+      name: string;
+      specialization: string;
+      createdBefore?: string;
+      createdAfter?: string;
+    }
+  ) {
     try {
       let myTrainings = [];
 
       if (role === "student") {
         myTrainings = await this.dynamoDbTrainingService.myTrainingsAsStudent(
-          userId
+          userId,
+          params
         );
       } else {
         myTrainings = await this.dynamoDbTrainingService.myTrainingsAsTrainer(
-          userId
+          userId,
+          params
         );
       }
 

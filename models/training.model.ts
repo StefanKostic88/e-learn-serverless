@@ -6,6 +6,7 @@ export interface TrainingCreationAttributes {
   specialization?: string;
   trainingName: string;
   startDate: string;
+  endDate: string;
   trainerName: string;
   studentName: string;
   description?: string;

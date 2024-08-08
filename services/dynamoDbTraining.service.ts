@@ -33,8 +33,8 @@ export class DynamoDbTrainingService {
       trainingName: { S: data.trainingName },
       trainerName: { S: data.trainerName },
       studentName: { S: data.studentName },
-
       startDate: { S: new Date(data.startDate).toISOString() },
+      endDate: { S: new Date(data.endDate).toISOString() },
       duration: { S: data.duration },
       ...(data.specialization && {
         specialization: { S: data.specialization },
@@ -74,9 +74,22 @@ export class DynamoDbTrainingService {
     }
   }
 
-  public async myTrainingsAsStudent(userId: string) {
+  public async myTrainingsAsStudent(
+    userId: string,
+    params: {
+      name: string;
+      specialization: string;
+      createdBefore?: string;
+      createdAfter?: string;
+    }
+  ) {
     try {
-      const scanCommand = this.generateScanComand(userId, "student_id");
+      const scanCommand = this.generateScanComand(
+        userId,
+        "student_id",
+        params,
+        "trainerName"
+      );
 
       const myTrainingsItems = await this.dbClient.send(
         new ScanCommand(scanCommand)
@@ -91,9 +104,22 @@ export class DynamoDbTrainingService {
     }
   }
 
-  public async myTrainingsAsTrainer(userId: string) {
+  public async myTrainingsAsTrainer(
+    userId: string,
+    params: {
+      name?: string;
+      specialization?: string;
+      createdBefore?: string;
+      createdAfter?: string;
+    }
+  ) {
     try {
-      const scanCommand = this.generateScanComand(userId, "trainer_id");
+      const scanCommand = this.generateScanComand(
+        userId,
+        "trainer_id",
+        params,
+        "studentName"
+      );
 
       const myTrainingsItems = await this.dbClient.send(
         new ScanCommand(scanCommand)
@@ -108,24 +134,76 @@ export class DynamoDbTrainingService {
     }
   }
 
-  private generateScanComand(userId: string, propName: string) {
-    const filterExpression = `${propName} = :${propName}`;
-    const expressionAttributeValue = `:${propName}`;
+  private generateScanComand(
+    userId: string,
+    propName: string,
+    params: {
+      name?: string;
+      specialization?: string;
+      createdBefore?: string;
+      createdAfter?: string;
+    },
+    searchedName: string
+  ) {
+    console.log(params);
+    let filterExpression = `#${propName} = :${propName}`;
+    let expressionAttributeValues: { [key: string]: any } = {
+      [`:${propName}`]: { S: userId },
+    };
+    let expressionAttributeNames: { [key: string]: string } = {
+      [`#${propName}`]: propName,
+    };
+
+    if (params?.name) {
+      filterExpression += ` and #${searchedName} = :${searchedName}`;
+      expressionAttributeValues[`:${searchedName}`] = { S: params.name };
+    }
+
+    if (params?.specialization) {
+      filterExpression += " and #specialization = :specialization";
+      expressionAttributeValues[":specialization"] = {
+        S: params.specialization,
+      };
+    }
+
+    if (params?.name) {
+      expressionAttributeNames[`#${searchedName}`] = `${searchedName}`;
+    }
+
+    if (params?.specialization) {
+      expressionAttributeNames["#specialization"] = "specialization";
+    }
+
+    if (params?.createdBefore && params?.createdAfter) {
+      filterExpression +=
+        " and #startDate BETWEEN :createdBefore AND :createdAfter";
+      // expressionAttributeValues[":startDate"] = params.startDate;
+      // expressionAttributeValues[":endDate"] = params.endDate;
+      expressionAttributeValues = {
+        ...expressionAttributeValues,
+        ":createdBefore": { S: params.createdBefore.toString() },
+        ":createdAfter": { S: params.createdAfter.toString() },
+      };
+
+      expressionAttributeNames = {
+        ...expressionAttributeNames,
+        "#startDate": "startDate",
+      };
+      // expressionAttributeNames["#created_at"] = "created_at";
+    }
+
+    console.log({
+      TableName: this.tableArn,
+      FilterExpression: filterExpression,
+      ExpressionAttributeNames: expressionAttributeNames,
+      ExpressionAttributeValues: expressionAttributeValues,
+    });
 
     return {
       TableName: this.tableArn,
       FilterExpression: filterExpression,
-      ExpressionAttributeValues: {
-        [expressionAttributeValue]: { S: userId },
-      },
+      ExpressionAttributeNames: expressionAttributeNames,
+      ExpressionAttributeValues: expressionAttributeValues,
     };
   }
 }
-
-// {
-//   TableName: this.tableArn,
-//   FilterExpression: "student_id = :student_id",
-//   ExpressionAttributeValues: {
-//     ":student_id": { S: userId },
-//   },
-// }

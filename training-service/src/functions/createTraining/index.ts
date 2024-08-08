@@ -8,6 +8,11 @@ export default {
       http: {
         method: "post",
         path: "create-training",
+        cors: {
+          origin: "*",
+          headers: ["Content-Type", "Authorization"],
+          allowCredentials: false,
+        },
         request: {
           schemas: {
             "application/json": schema,

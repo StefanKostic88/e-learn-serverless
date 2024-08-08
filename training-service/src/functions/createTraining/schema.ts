@@ -8,7 +8,10 @@ export default {
     specialization: { type: "string" },
     trainingName: { type: "string" },
     startDate: { type: "string" },
+    endDate: { type: "string" },
     trainerName: { type: "string" },
+    studentName: { type: "string" },
+    description: { type: "string" },
   },
   required: [
     "trainer_id",
@@ -18,6 +21,8 @@ export default {
     "specialization",
     "trainingName",
     "startDate",
+    "endDate",
     "trainerName",
+    "studentName",
   ],
 } as const;

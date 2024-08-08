@@ -12,7 +12,7 @@ import myTrainings from "@functions/myTrainings";
 const serverlessConfiguration: AWS = {
   service: "training-service",
   frameworkVersion: "3",
-  plugins: ["serverless-esbuild"],
+  plugins: ["serverless-esbuild", "serverless-offline"],
   provider: {
     name: "aws",
     runtime: "nodejs20.x",
