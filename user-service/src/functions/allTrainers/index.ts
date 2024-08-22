@@ -1,4 +1,5 @@
 import { handlerPath } from "@libs/handler-resolver";
+import { headerDataServiceInstance } from "../../../../services/headerData.service";
 
 export default {
   handler: `${handlerPath(__dirname)}/handler.allTrainings`,
@@ -7,11 +8,7 @@ export default {
       http: {
         method: "get",
         path: "trainers",
-        cors: {
-          origin: "*",
-          headers: ["Content-Type", "Authorization"],
-          allowCredentials: false,
-        },
+        cors: headerDataServiceInstance.generateCors(),
       },
     },
   ],

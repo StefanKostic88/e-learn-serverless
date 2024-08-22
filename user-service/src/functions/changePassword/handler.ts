@@ -5,15 +5,18 @@ import { middyfy } from "@libs/lambda";
 import schema from "./schema";
 
 import { userServiceInstance } from "../../../../services/user.service";
+import {
+  headerDataServiceInstance,
+  HeaderDataTypes,
+} from "../../../../services/headerData.service";
 
 const changePassword: ValidatedEventAPIGatewayProxyEvent<
   typeof schema
 > = async (event) => {
-  const headers = {
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "OPTIONS,POST",
-  };
+  const headers = headerDataServiceInstance.generateHeaderData(
+    HeaderDataTypes.POST
+  );
+
   try {
     const userId = event.requestContext.authorizer.id;
 
@@ -43,3 +46,9 @@ const changePassword: ValidatedEventAPIGatewayProxyEvent<
 };
 
 export const main = middyfy(changePassword);
+
+// const headers = {
+//   "Access-Control-Allow-Headers": "Content-Type",
+//   "Access-Control-Allow-Origin": "*",
+//   "Access-Control-Allow-Methods": "OPTIONS,POST",
+// };

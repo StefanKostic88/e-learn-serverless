@@ -5,15 +5,18 @@ import { middyfy } from "@libs/lambda";
 import schema from "./schema";
 
 import { userServiceInstance } from "../../../../services/user.service";
+import {
+  headerDataServiceInstance,
+  HeaderDataTypes,
+} from "../../../../services/headerData.service";
 
 const editProfile: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   event
 ) => {
-  const headers = {
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "OPTIONS,PATCH",
-  };
+  const headers = headerDataServiceInstance.generateHeaderData(
+    HeaderDataTypes.PATCH
+  );
+
   try {
     const userId = event.requestContext.authorizer.id;
     const role = event.requestContext.authorizer.role;
@@ -47,3 +50,9 @@ const editProfile: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
 };
 
 export const main = middyfy(editProfile);
+
+// const headers = {
+//   "Access-Control-Allow-Headers": "Content-Type",
+//   "Access-Control-Allow-Origin": "*",
+//   "Access-Control-Allow-Methods": "OPTIONS,PATCH",
+// };

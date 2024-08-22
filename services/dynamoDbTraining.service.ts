@@ -181,8 +181,10 @@ export class DynamoDbTrainingService {
       // expressionAttributeValues[":endDate"] = params.endDate;
       expressionAttributeValues = {
         ...expressionAttributeValues,
-        ":createdBefore": { S: params.createdBefore.toString() },
-        ":createdAfter": { S: params.createdAfter.toString() },
+        ":createdBefore": { S: new Date(params.createdBefore).toISOString() },
+        ":createdAfter": { S: new Date(params.createdAfter).toString() },
+        // ":createdBefore": { S: params.createdBefore.toString() },
+        // ":createdAfter": { S: params.createdAfter.toString() },
       };
 
       expressionAttributeNames = {

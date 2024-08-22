@@ -6,17 +6,19 @@ import schema from "./schema";
 
 import { trainingServiceInstance } from "../../../../services/training.service";
 import { userServiceInstance } from "../../../../services/user.service";
+import {
+  headerDataServiceInstance,
+  HeaderDataTypes,
+} from "../../../../services/headerData.service";
 
 const createTraining: ValidatedEventAPIGatewayProxyEvent<
   typeof schema
 > = async (event) => {
   // const userId = event.requestContext.authorizer.id;
 
-  const headers = {
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "OPTIONS,POST",
-  };
+  const headers = headerDataServiceInstance.generateHeaderData(
+    HeaderDataTypes.POST
+  );
 
   const role = event.requestContext.authorizer.role;
 

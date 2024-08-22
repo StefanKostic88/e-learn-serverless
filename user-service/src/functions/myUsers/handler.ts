@@ -1,14 +1,11 @@
 import { APIGatewayProxyEvent, APIGatewayProxyHandler } from "aws-lambda";
 import { userServiceInstance } from "../../../../services/user.service";
+import { headerDataServiceInstance } from "../../../../services/headerData.service";
 
 export const myUsers: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ) => {
-  const headers = {
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "OPTIONS,GET",
-  };
+  const headers = headerDataServiceInstance.generateHeaderData();
   try {
     const userId = event.requestContext.authorizer.id;
 

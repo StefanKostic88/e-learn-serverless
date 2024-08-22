@@ -4,15 +4,17 @@ import { middyfy } from "@libs/lambda";
 
 import { userServiceInstance } from "../../../../services/user.service";
 import { LoginData } from "../../models/user.model";
+import {
+  headerDataServiceInstance,
+  HeaderDataTypes,
+} from "../../../../services/headerData.service";
 
 const loginUser: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   event
 ) => {
-  const headers = {
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "OPTIONS,POST",
-  };
+  const headers = headerDataServiceInstance.generateHeaderData(
+    HeaderDataTypes.POST
+  );
 
   try {
     const loginData: LoginData = event.body;
@@ -43,3 +45,9 @@ const loginUser: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
 };
 
 export const main = middyfy(loginUser);
+
+// const headers = {
+//   "Access-Control-Allow-Headers": "Content-Type",
+//   "Access-Control-Allow-Origin": "*",
+//   "Access-Control-Allow-Methods": "OPTIONS,POST",
+// };

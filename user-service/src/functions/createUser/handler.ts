@@ -7,14 +7,17 @@ import { userServiceInstance } from "../../../../services/user.service";
 import schema from "./schema";
 import { RegisterUser } from "../../models/user.model";
 
+import {
+  headerDataServiceInstance,
+  HeaderDataTypes,
+} from "../../../../services/headerData.service";
+
 const createUser: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   event
 ) => {
-  const headers = {
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "OPTIONS,POST",
-  };
+  const headers = headerDataServiceInstance.generateHeaderData(
+    HeaderDataTypes.POST
+  );
 
   try {
     let registerUser: RegisterUser = event.body;
@@ -45,3 +48,9 @@ const createUser: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
 };
 
 export const main = middyfy(createUser);
+
+// const headers = {
+//   "Access-Control-Allow-Headers": "Content-Type",
+//   "Access-Control-Allow-Origin": "*",
+//   "Access-Control-Allow-Methods": "OPTIONS,POST",
+// };

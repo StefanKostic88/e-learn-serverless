@@ -1,5 +1,6 @@
 import schema from "./schema";
 import { handlerPath } from "@libs/handler-resolver";
+import { headerDataServiceInstance } from "../../../../services/headerData.service";
 
 export default {
   handler: `${handlerPath(__dirname)}/handler.main`,
@@ -8,11 +9,7 @@ export default {
       http: {
         method: "post",
         path: "login",
-        cors: {
-          origin: "*",
-          headers: ["Content-Type", "Authorization"],
-          allowCredentials: false,
-        },
+        cors: headerDataServiceInstance.generateCors(),
         request: {
           schemas: {
             "application/json": schema,
@@ -22,8 +19,3 @@ export default {
     },
   ],
 };
-
-// "X-Amz-Date",
-// "Authorization",
-// "X-Api-Key",
-// "X-Amz-Security-Token",

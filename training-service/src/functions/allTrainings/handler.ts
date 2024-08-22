@@ -1,13 +1,10 @@
 import { APIGatewayProxyHandler } from "aws-lambda";
 
 import { trainingServiceInstance } from "../../../../services/training.service";
+import { headerDataServiceInstance } from "../../../../services/headerData.service";
 
 export const allTrainings: APIGatewayProxyHandler = async () => {
-  const headers = {
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "OPTIONS,POST,GET",
-  };
+  const headers = headerDataServiceInstance.generateHeaderData();
   try {
     const data = await trainingServiceInstance.getAllTrainings();
 

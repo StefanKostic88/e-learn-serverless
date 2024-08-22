@@ -1,12 +1,13 @@
 import { APIGatewayProxyHandler } from "aws-lambda";
 import { userServiceInstance } from "../../../../services/user.service";
+import {
+  headerDataServiceInstance,
+  HeaderDataTypes,
+} from "../../../../services/headerData.service";
 
 export const allStudents: APIGatewayProxyHandler = async () => {
-  const headers = {
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "OPTIONS,GET",
-  };
+  const headers = headerDataServiceInstance.generateHeaderData();
+
   try {
     const students = await userServiceInstance.getAllStudents();
 
@@ -30,3 +31,9 @@ export const allStudents: APIGatewayProxyHandler = async () => {
     };
   }
 };
+
+// const headers = {
+//   "Access-Control-Allow-Headers": "Content-Type",
+//   "Access-Control-Allow-Origin": "*",
+//   "Access-Control-Allow-Methods": "OPTIONS,GET",
+// };
