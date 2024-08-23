@@ -11,41 +11,71 @@ import {
   HeaderDataTypes,
 } from "../../../../services/headerData.service";
 
+import { catchAsyncValidatorHandler } from "../../helpers/catchAsync";
+
 const createTraining: ValidatedEventAPIGatewayProxyEvent<
   typeof schema
 > = async (event) => {
-  // const userId = event.requestContext.authorizer.id;
-
   const headers = headerDataServiceInstance.generateHeaderData(
     HeaderDataTypes.POST
   );
 
   const role = event.requestContext.authorizer.role;
 
-  try {
-    const trainingData = event.body;
+  const trainingData = event.body;
 
-    await trainingServiceInstance.createTraining(trainingData);
+  await trainingServiceInstance.createTraining(trainingData);
 
-    return {
-      statusCode: 201,
+  return {
+    statusCode: 201,
+    headers,
+    body: JSON.stringify({
+      message: `Training created`,
       headers,
-      body: JSON.stringify({
-        message: `Training created`,
-        headers,
-        role,
-      }),
-    };
-  } catch (error) {
-    return {
-      statusCode: error.statusCode,
-      headers,
-      body: JSON.stringify({
-        message: error.message,
-        headers,
-      }),
-    };
-  }
+      role,
+    }),
+  };
 };
 
-export const main = middyfy(createTraining);
+export const main = middyfy(
+  catchAsyncValidatorHandler<typeof schema>(createTraining)
+);
+
+// const createTraining: ValidatedEventAPIGatewayProxyEvent<
+//   typeof schema
+// > = async (event) => {
+//   // const userId = event.requestContext.authorizer.id;
+
+//   const headers = headerDataServiceInstance.generateHeaderData(
+//     HeaderDataTypes.POST
+//   );
+
+//   const role = event.requestContext.authorizer.role;
+
+//   try {
+//     const trainingData = event.body;
+
+//     await trainingServiceInstance.createTraining(trainingData);
+
+//     return {
+//       statusCode: 201,
+//       headers,
+//       body: JSON.stringify({
+//         message: `Training created`,
+//         headers,
+//         role,
+//       }),
+//     };
+//   } catch (error) {
+//     return {
+//       statusCode: error.statusCode,
+//       headers,
+//       body: JSON.stringify({
+//         message: error.message,
+//         headers,
+//       }),
+//     };
+//   }
+// };
+
+// export const main = middyfy(createTraining);

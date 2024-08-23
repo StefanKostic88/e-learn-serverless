@@ -54,18 +54,20 @@ class TrainingService {
     }
   ) {
     try {
-      let myTrainings = [];
+      let myTrainings: Record<string, any>[] = [];
 
       if (role === "student") {
-        myTrainings = await this.dynamoDbTrainingService.myTrainingsAsStudent(
-          userId,
-          params
-        );
+        myTrainings =
+          (await this.dynamoDbTrainingService.myTrainingsAsStudent(
+            userId,
+            params
+          )) || [];
       } else {
-        myTrainings = await this.dynamoDbTrainingService.myTrainingsAsTrainer(
-          userId,
-          params
-        );
+        myTrainings =
+          (await this.dynamoDbTrainingService.myTrainingsAsTrainer(
+            userId,
+            params
+          )) || [];
       }
 
       return myTrainings;
