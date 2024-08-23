@@ -10,6 +10,8 @@ import {
   HeaderDataTypes,
 } from "../../../../services/headerData.service";
 
+import { catchAsyncValidatorHandler } from "../../helpers/catchAsync";
+
 const editProfile: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   event
 ) => {
@@ -17,42 +19,74 @@ const editProfile: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
     HeaderDataTypes.PATCH
   );
 
-  try {
-    const userId = event.requestContext.authorizer.id;
-    const role = event.requestContext.authorizer.role;
+  const userId = event.requestContext.authorizer.id;
+  const role = event.requestContext.authorizer.role;
 
-    userServiceInstance.checkAllProps(Object.keys(event.body));
+  userServiceInstance.checkAllProps(Object.keys(event.body));
 
-    const message = await userServiceInstance.updateUserData(
-      userId,
-      event.body,
-      role
-    );
+  const message = await userServiceInstance.updateUserData(
+    userId,
+    event.body,
+    role
+  );
 
-    return {
-      statusCode: 200,
+  return {
+    statusCode: 200,
+    headers,
+    body: JSON.stringify({
+      message: message,
       headers,
-      body: JSON.stringify({
-        message: message,
-        headers,
-      }),
-    };
-  } catch (error) {
-    return {
-      statusCode: error.statusCode,
-      headers,
-      body: JSON.stringify({
-        message: error.message,
-        headers,
-      }),
-    };
-  }
+    }),
+  };
 };
 
-export const main = middyfy(editProfile);
+export const main = middyfy(
+  catchAsyncValidatorHandler<typeof schema>(editProfile, HeaderDataTypes.PATCH)
+);
 
 // const headers = {
 //   "Access-Control-Allow-Headers": "Content-Type",
 //   "Access-Control-Allow-Origin": "*",
 //   "Access-Control-Allow-Methods": "OPTIONS,PATCH",
 // };
+
+// const editProfile: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
+//   event
+// ) => {
+//   const headers = headerDataServiceInstance.generateHeaderData(
+//     HeaderDataTypes.PATCH
+//   );
+
+//   try {
+//     const userId = event.requestContext.authorizer.id;
+//     const role = event.requestContext.authorizer.role;
+
+//     userServiceInstance.checkAllProps(Object.keys(event.body));
+
+//     const message = await userServiceInstance.updateUserData(
+//       userId,
+//       event.body,
+//       role
+//     );
+
+//     return {
+//       statusCode: 200,
+//       headers,
+//       body: JSON.stringify({
+//         message: message,
+//         headers,
+//       }),
+//     };
+//   } catch (error) {
+//     return {
+//       statusCode: error.statusCode,
+//       headers,
+//       body: JSON.stringify({
+//         message: error.message,
+//         headers,
+//       }),
+//     };
+//   }
+// };
+
+// export const main = middyfy(editProfile);

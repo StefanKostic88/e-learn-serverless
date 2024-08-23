@@ -5,7 +5,6 @@ import {
   StatementEffect,
 } from "aws-lambda";
 
-// import { jwtServiceInstance } from "../../../../services/jwt.service";
 import CustomError from "../../../../services/customError.service";
 import { userServiceInstance } from "../../../../services/user.service";
 
@@ -42,15 +41,12 @@ const generatePolicy = (
 };
 
 export const basicAuthorizer = async (
-  event: APIGatewayTokenAuthorizerEvent,
-  context: APIGatewayAuthorizerResultContext
+  event: APIGatewayTokenAuthorizerEvent
 ) => {
   if (
     !event.authorizationToken ||
     event.authorizationToken.split(" ")[0] !== "Bearer"
   ) {
-    // throw new Error("Unauthorized");
-    // 401
     throw new CustomError("Unauthorized", 401);
   }
 
@@ -61,9 +57,7 @@ export const basicAuthorizer = async (
       id: string;
       role: string;
     };
-    // const decodedToken = (await jwtServiceInstance.verifyToken(token)) as {
-    //   id: string;
-    // };
+
     if (decodedToken.id) {
       const context: APIGatewayAuthorizerResultContext = {
         id: (decodedToken as { id: string }).id,
@@ -78,7 +72,5 @@ export const basicAuthorizer = async (
     }
   } catch (error) {
     throw new CustomError("Unauthorized", 401);
-    // throw new Error("Unauthorized");
-    // 401
   }
 };

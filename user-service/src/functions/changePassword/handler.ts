@@ -10,6 +10,8 @@ import {
   HeaderDataTypes,
 } from "../../../../services/headerData.service";
 
+import { catchAsyncValidatorHandler } from "../../helpers/catchAsync";
+
 const changePassword: ValidatedEventAPIGatewayProxyEvent<
   typeof schema
 > = async (event) => {
@@ -17,38 +19,66 @@ const changePassword: ValidatedEventAPIGatewayProxyEvent<
     HeaderDataTypes.POST
   );
 
-  try {
-    const userId = event.requestContext.authorizer.id;
+  const userId = event.requestContext.authorizer.id;
 
-    const message = await userServiceInstance.updateUserPassword(
-      userId,
-      event.body
-    );
+  const message = await userServiceInstance.updateUserPassword(
+    userId,
+    event.body
+  );
 
-    return {
-      statusCode: 200,
+  return {
+    statusCode: 200,
+    headers,
+    body: JSON.stringify({
+      message,
       headers,
-      body: JSON.stringify({
-        message,
-        headers,
-      }),
-    };
-  } catch (error) {
-    return {
-      statusCode: error.statusCode,
-      headers,
-      body: JSON.stringify({
-        message: error.message,
-        headers,
-      }),
-    };
-  }
+    }),
+  };
 };
 
-export const main = middyfy(changePassword);
+export const main = middyfy(
+  catchAsyncValidatorHandler<typeof schema>(changePassword)
+);
 
 // const headers = {
 //   "Access-Control-Allow-Headers": "Content-Type",
 //   "Access-Control-Allow-Origin": "*",
 //   "Access-Control-Allow-Methods": "OPTIONS,POST",
 // };
+
+// const changePassword: ValidatedEventAPIGatewayProxyEvent<
+//   typeof schema
+// > = async (event) => {
+//   const headers = headerDataServiceInstance.generateHeaderData(
+//     HeaderDataTypes.POST
+//   );
+
+//   try {
+//     const userId = event.requestContext.authorizer.id;
+
+//     const message = await userServiceInstance.updateUserPassword(
+//       userId,
+//       event.body
+//     );
+
+//     return {
+//       statusCode: 200,
+//       headers,
+//       body: JSON.stringify({
+//         message,
+//         headers,
+//       }),
+//     };
+//   } catch (error) {
+//     return {
+//       statusCode: error.statusCode,
+//       headers,
+//       body: JSON.stringify({
+//         message: error.message,
+//         headers,
+//       }),
+//     };
+//   }
+// };
+
+// export const main = middyfy(changePassword);

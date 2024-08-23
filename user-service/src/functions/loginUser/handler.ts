@@ -9,6 +9,8 @@ import {
   HeaderDataTypes,
 } from "../../../../services/headerData.service";
 
+import { catchAsyncValidatorHandler } from "../../helpers/catchAsync";
+
 const loginUser: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   event
 ) => {
@@ -16,38 +18,62 @@ const loginUser: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
     HeaderDataTypes.POST
   );
 
-  try {
-    const loginData: LoginData = event.body;
-    // "message": "Invalid request body" in case pass and username are not provided
+  const loginData: LoginData = event.body;
 
-    const token = await userServiceInstance.loginUser(
-      loginData.username,
-      loginData.password
-    );
-    return {
-      statusCode: 200,
+  const token = await userServiceInstance.loginUser(
+    loginData.username,
+    loginData.password
+  );
+
+  return {
+    statusCode: 200,
+    headers,
+    body: JSON.stringify({
+      token,
+      message: "Sucessfully Loged in",
       headers,
-      body: JSON.stringify({
-        token,
-        message: "Sucessfully Loged in",
-        headers,
-      }),
-    };
-  } catch (error) {
-    return {
-      statusCode: error.statusCode,
-      headers,
-      body: JSON.stringify({
-        message: error.message,
-      }),
-    };
-  }
+    }),
+  };
 };
 
-export const main = middyfy(loginUser);
+export const main = middyfy(
+  catchAsyncValidatorHandler<typeof schema>(loginUser)
+);
 
-// const headers = {
-//   "Access-Control-Allow-Headers": "Content-Type",
-//   "Access-Control-Allow-Origin": "*",
-//   "Access-Control-Allow-Methods": "OPTIONS,POST",
+// const loginUser: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
+//   event
+// ) => {
+//   const headers = headerDataServiceInstance.generateHeaderData(
+//     HeaderDataTypes.POST
+//   );
+
+//   try {
+//     const loginData: LoginData = event.body;
+//     // "message": "Invalid request body" in case pass and username are not provided
+
+//     const token = await userServiceInstance.loginUser(
+//       loginData.username,
+//       loginData.password
+//     );
+
+//     return {
+//       statusCode: 200,
+//       headers,
+//       body: JSON.stringify({
+//         token,
+//         message: "Sucessfully Loged in",
+//         headers,
+//       }),
+//     };
+//   } catch (error) {
+//     return {
+//       statusCode: error.statusCode,
+//       headers,
+//       body: JSON.stringify({
+//         message: error.message,
+//       }),
+//     };
+//   }
 // };
+
+// export const main = middyfy(loginUser);
