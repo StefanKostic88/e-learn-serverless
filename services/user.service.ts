@@ -210,6 +210,7 @@ class UserService {
         "address",
         "dateOfBirth",
         "specialization",
+        "img",
       ];
       const validProps = propsArr.every((prop) => allowedProps.includes(prop));
       const errorMessage =
