@@ -9,6 +9,9 @@ import { CurrentUser } from "../user-service/src/models/user.model";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
 import CustomError from "./customError.service";
 
+import * as dotenv from "dotenv";
+dotenv.config({ path: "../.env" });
+
 export class DynamoDbService {
   public static instance: DynamoDbService;
   dbClient: DynamoDBClient;
@@ -44,7 +47,7 @@ export class DynamoDbService {
       };
 
       const putCommand = {
-        TableName: "arn:aws:dynamodb:eu-north-1:975049910354:table/Users",
+        TableName: process.env.USER_TABLE_ARN,
         Item: userItem,
       };
 
@@ -61,7 +64,7 @@ export class DynamoDbService {
   public async checkIfUserEmailExists(email: string) {
     try {
       const scanCommand = {
-        TableName: "arn:aws:dynamodb:eu-north-1:975049910354:table/Users",
+        TableName: process.env.USER_TABLE_ARN,
         FilterExpression: "email = :email",
         ExpressionAttributeValues: {
           ":email": { S: email },
@@ -80,7 +83,7 @@ export class DynamoDbService {
   public async findUserByUserName(username: string) {
     try {
       const scanCommand = {
-        TableName: "arn:aws:dynamodb:eu-north-1:975049910354:table/Users",
+        TableName: process.env.USER_TABLE_ARN,
         FilterExpression: "username = :username",
         ExpressionAttributeValues: {
           ":username": { S: username },
@@ -104,7 +107,7 @@ export class DynamoDbService {
   public async getUserById(userId: string) {
     const userItem = await this.dbClient.send(
       new GetItemCommand({
-        TableName: "arn:aws:dynamodb:eu-north-1:975049910354:table/Users",
+        TableName: process.env.USER_TABLE_ARN,
         Key: {
           id: { S: userId },
         },
@@ -124,7 +127,7 @@ export class DynamoDbService {
     try {
       await this.dbClient.send(
         new UpdateItemCommand({
-          TableName: "arn:aws:dynamodb:eu-north-1:975049910354:table/Users",
+          TableName: process.env.USER_TABLE_ARN,
           Key: {
             id: { S: userId },
           },
@@ -168,7 +171,7 @@ export class DynamoDbService {
 
       await this.dbClient.send(
         new UpdateItemCommand({
-          TableName: "arn:aws:dynamodb:eu-north-1:975049910354:table/Users",
+          TableName: process.env.USER_TABLE_ARN,
           Key: {
             id: { S: userId },
           },
@@ -186,7 +189,7 @@ export class DynamoDbService {
     try {
       const usersItems = await this.dbClient.send(
         new ScanCommand({
-          TableName: "arn:aws:dynamodb:eu-north-1:975049910354:table/Users",
+          TableName: process.env.USER_TABLE_ARN,
           FilterExpression: "#r = :role",
           ExpressionAttributeNames: {
             "#r": "role",
@@ -248,7 +251,7 @@ export class DynamoDbService {
     myUsersArray: string[]
   ) {
     const updateComand = {
-      TableName: "arn:aws:dynamodb:eu-north-1:975049910354:table/Users",
+      TableName: process.env.USER_TABLE_ARN,
       Key: {
         id: { S: currentUserId },
       },

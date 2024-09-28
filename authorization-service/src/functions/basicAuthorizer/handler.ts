@@ -8,6 +8,10 @@ import {
 import CustomError from "../../../../services/customError.service";
 import { userServiceInstance } from "../../../../services/user.service";
 
+import * as dotenv from "dotenv";
+
+dotenv.config({ path: "../../../../.env" });
+
 const generatePolicy = (
   principalId: string,
   effect: StatementEffect,
@@ -23,13 +27,13 @@ const generatePolicy = (
           Action: "execute-api:Invoke",
           Effect: effect,
           Resource: [
-            "arn:aws:execute-api:eu-north-1:975049910354:lryie611ua/*/GET/myAccount",
-            "arn:aws:execute-api:eu-north-1:975049910354:lryie611ua/*/PATCH/change-password",
-            "arn:aws:execute-api:eu-north-1:975049910354:lryie611ua/*/PATCH/edit",
-            "arn:aws:execute-api:eu-north-1:975049910354:lryie611ua/*/POST/create-training",
-            "arn:aws:execute-api:eu-north-1:975049910354:lryie611ua/*/GET/my-trainings",
-            "arn:aws:execute-api:eu-north-1:975049910354:lryie611ua/*/GET/my-users",
-            "arn:aws:execute-api:eu-north-1:975049910354:lryie611ua/*/POST/add-my-users",
+            process.env.MY_ACCOUNT_ARN,
+            process.env.CHANGE_PASS_ARN,
+            process.env.EDIT_PROFILE_ARN,
+            process.env.CREATE_TRAINING_ARN,
+            process.env.MY_TRAININGS_ARN,
+            process.env.MY_USERS_ARN,
+            process.env.ADD_MY_USER_ARN,
           ],
         },
       ],

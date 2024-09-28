@@ -10,11 +10,6 @@ export default {
         method: "get",
         path: "import-photo",
         cors: headerDataServiceInstance.generateCors(),
-        // request: {
-        //   schemas: {
-        //     "application/json": schema,
-        //   },
-        // },
       },
     },
   ],

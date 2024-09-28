@@ -22,9 +22,3 @@ export default {
     },
   ],
 };
-
-// cors: {
-//   origin: "*",
-//   headers: ["Content-Type", "Authorization"],
-//   allowCredentials: false,
-// },

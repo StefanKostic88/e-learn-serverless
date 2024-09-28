@@ -1,7 +1,8 @@
 import { APIGatewayProxyHandler } from "aws-lambda";
 import { S3 } from "aws-sdk";
-// import Buffer from "node:buffer";
-//
+
+import * as dotenv from "dotenv";
+dotenv.config({ path: "../../../../.env" });
 
 import { headerDataServiceInstance } from "../../../../services/headerData.service";
 
@@ -16,10 +17,9 @@ export const addUserPhoto: APIGatewayProxyHandler = async (event) => {
   const signedUrlExpires = 60 * 5;
 
   const params = {
-    Bucket: "my-file-import-bucket-s3-bucket-5501154561125-11445554-name",
+    Bucket: process.env.IMPORT_FILE_BUCKET,
     Key: `user-profile-images/${photoName}.${extension}`,
     Expires: signedUrlExpires,
-    // ContentType: `image/${extension}`,
   };
 
   const signedUrl = s3.getSignedUrl("putObject", params);
@@ -29,8 +29,6 @@ export const addUserPhoto: APIGatewayProxyHandler = async (event) => {
       statusCode: 200,
       headers,
       body: JSON.stringify({ data: signedUrl, key: params.Key, headers }),
-
-      // body: JSON.stringify({ data: signedUrl, headers }),
     };
   } catch (error) {
     console.log(error);

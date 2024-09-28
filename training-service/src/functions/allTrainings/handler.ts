@@ -17,26 +17,3 @@ export const allTrainings = catchAsyncProxyHandler(async () => {
     }),
   };
 });
-
-// export const allTrainings: APIGatewayProxyHandler = async () => {
-//   const headers = headerDataServiceInstance.generateHeaderData();
-//   try {
-//     const data = await trainingServiceInstance.getAllTrainings();
-
-//     return {
-//       statusCode: 200,
-//       headers,
-//       body: JSON.stringify({
-//         message: "Success",
-//         data,
-//       }),
-//     };
-//   } catch (error) {
-//     return {
-//       statusCode: error.statusCode,
-//       body: JSON.stringify({
-//         message: error.message,
-//       }),
-//     };
-//   }
-// };

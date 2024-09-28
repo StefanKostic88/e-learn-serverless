@@ -6,11 +6,14 @@ import {
 import { TrainingCreationAttributes } from "../models/training.model";
 import { v4 } from "uuid";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
+import * as dotenv from "dotenv";
+
+dotenv.config({ path: "../.env" });
 
 export class DynamoDbTrainingService {
   public static instance: DynamoDbTrainingService;
   private dbClient: DynamoDBClient;
-  private tableArn = "arn:aws:dynamodb:eu-north-1:975049910354:table/Trainings";
+  private tableArn = process.env.TRAINING_TABLE_ARN;
 
   private constructor() {
     this.dbClient = new DynamoDBClient();
